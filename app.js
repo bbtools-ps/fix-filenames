@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const projectDir = "u:\\2021\\";
+const projectDir = "U:\\2021\\";
 
 const prepareFile = (file, dir, dirName, extensionNames) => {
   const fileExtensions = new RegExp(extensionNames);
@@ -51,6 +51,7 @@ const listDir = (dir, fileList = []) => {
 };
 
 console.log(`BBTools Fix Filenames v1.0.0
+
 Looking for files inside "${projectDir}"...`);
 
 let foundFiles = listDir(projectDir);
