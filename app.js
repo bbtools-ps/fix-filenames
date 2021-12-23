@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const projectDir = "u:\\2021\\";
 
 const prepareFile = (file, dir, dirName, extensionNames) => {
   const fileExtensions = new RegExp(extensionNames);
@@ -49,9 +50,10 @@ const listDir = (dir, fileList = []) => {
   return fileList;
 };
 
-console.log("BBTools Fix Filenames v1.0.0\n\nLooking for files...");
+console.log(`BBTools Fix Filenames v1.0.0
+Looking for files inside "${projectDir}"...`);
 
-let foundFiles = listDir("u:\\2021\\");
+let foundFiles = listDir(projectDir);
 if (foundFiles.length) {
   foundFiles.forEach((f) => {
     console.log(`Renaming file: ${f.oldSrc} => ${f.newSrc}`);
