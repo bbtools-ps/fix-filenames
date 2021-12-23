@@ -3,8 +3,8 @@ const fs = require("fs");
 const projectDir = "U:\\2021\\";
 
 const prepareFile = (file, dir, dirName, extensionNames) => {
-  const fileExtensions = new RegExp(extensionNames);
-  const rootDir = new RegExp(dirName);
+  const fileExtensions = new RegExp(extensionNames, "i");
+  const rootDir = new RegExp(dirName, "i");
   let fileExtension = file.trim().match(fileExtensions);
   // if valid file extension is found in valid dir proceed to rename
   if (rootDir.test(dir) && fileExtension.length) {
