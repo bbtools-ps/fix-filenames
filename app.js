@@ -1,6 +1,9 @@
 const path = require("path");
 const fs = require("fs");
-const projectDir = "U:\\2021\\";
+const inquirer = require("inquirer");
+
+let data = fs.readFileSync("settings.json");
+let settings = JSON.parse(data);
 
 const prepareFile = (file, dir, dirName, extensionNames) => {
   const fileExtensions = new RegExp(extensionNames, "i");
@@ -50,24 +53,36 @@ const listDir = (dir, fileList = []) => {
   return fileList;
 };
 
-console.log(`BBTools Fix Filenames v1.0.0
+console.log("BBTools Fix Filenames v1.0.0\n");
 
-Looking for files inside "${projectDir}"...`);
+inquirer
+  .prompt([
+    {
+      type: "list",
+      name: "location",
+      message: "Choose the location?",
+      choices: settings.locations,
+    },
+  ])
+  .then((answer) => {
+    let projectDir = answer.location;
 
-let foundFiles = listDir(projectDir);
-if (foundFiles.length) {
-  foundFiles.forEach((f) => {
-    console.log(`Renaming file: ${f.oldSrc} => ${f.newSrc}`);
-    try {
-      if (fs.existsSync(f.newSrc)) {
-        console.log("File already exists");
-      } else {
-        fs.renameSync(f.oldSrc, f.newSrc);
-      }
-    } catch (err) {
-      console.error(err);
+    console.log("\nLooking for files. Please wait...");
+    let foundFiles = listDir(projectDir);
+    if (foundFiles.length) {
+      foundFiles.forEach((f) => {
+        console.log(`Renaming file: ${f.oldSrc} => ${f.newSrc}`);
+        try {
+          if (fs.existsSync(f.newSrc)) {
+            console.log("File already exists");
+          } else {
+            fs.renameSync(f.oldSrc, f.newSrc);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      });
     }
-  });
-}
 
-console.log("All done.");
+    console.log("All done.");
+  });
