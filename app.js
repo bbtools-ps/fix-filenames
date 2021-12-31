@@ -53,6 +53,25 @@ const listDir = (dir, fileList = []) => {
   return fileList;
 };
 
+const fixFilenames = (projectDir) => {
+  console.log("\nLooking for files. Please wait...");
+  let foundFiles = listDir(projectDir);
+  if (foundFiles.length) {
+    foundFiles.forEach((f) => {
+      console.log(`Renaming file: ${f.oldSrc} => ${f.newSrc}`);
+      try {
+        if (fs.existsSync(f.newSrc)) {
+          console.log("File already exists");
+        } else {
+          fs.renameSync(f.oldSrc, f.newSrc);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  }
+};
+
 console.log("BBTools Fix Filenames v1.0.0\n");
 
 inquirer
@@ -67,22 +86,7 @@ inquirer
   .then((answer) => {
     let projectDir = answer.location;
 
-    console.log("\nLooking for files. Please wait...");
-    let foundFiles = listDir(projectDir);
-    if (foundFiles.length) {
-      foundFiles.forEach((f) => {
-        console.log(`Renaming file: ${f.oldSrc} => ${f.newSrc}`);
-        try {
-          if (fs.existsSync(f.newSrc)) {
-            console.log("File already exists");
-          } else {
-            fs.renameSync(f.oldSrc, f.newSrc);
-          }
-        } catch (err) {
-          console.error(err);
-        }
-      });
-    }
+    fixFilenames(projectDir);
 
     console.log("All done.");
   });
