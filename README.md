@@ -1,6 +1,6 @@
 # FIX FILENAMES
 
-Fix Filenames is a Node.js script that is used to fix the filenames on the selected directory.
+Fix Filenames is a Node.js script that is used to fix the names of all supported files from the selected directory.
 
 ## Requirements for development
 
