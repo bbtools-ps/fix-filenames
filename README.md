@@ -7,9 +7,9 @@ Fix Filenames is a Node.js script that is used to fix the names of all supported
 1. [Node.js](https://nodejs.org/en/)
 2. [Visual Studio Code (optional)](https://code.visualstudio.com/)
 
-## Development script testing (Windows)
+## Development script testing
 
-Run the script by running the devStart.bat or type
+Run the script by running the devStart.bat (only on Windows) or type
 
 ```
 node app.js
