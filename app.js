@@ -98,7 +98,10 @@ inquirer
   .then((answer) => {
     let projectDir = answer.location;
 
-    fixFilenames(projectDir);
-
-    console.log("All done.");
+    if (fs.existsSync(projectDir)) {
+      fixFilenames(projectDir);
+      console.log("\nAll done.\n");
+    } else {
+      console.log("\nDirectory not found!\n");
+    }
   });
