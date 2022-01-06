@@ -1,0 +1,25 @@
+{
+  "name": "fix-filenames",
+  "version": "1.0.0",
+  "description": "Fix Filenames is a Node.js script that is used to fix the filenames on the selected directory.",
+  "main": "app.js",
+  "bin": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx pkg -t linux,macos,win . --out-path dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bbtools-ps/fix-filenames.git"
+  },
+  "author": "Bogdan Bogdanovic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bbtools-ps/fix-filenames/issues"
+  },
+  "homepage": "https://github.com/bbtools-ps/fix-filenames#readme",
+  "dependencies": {
+    "inquirer": "^8.2.0",
+    "pkg": "^5.5.1"
+  }
+}

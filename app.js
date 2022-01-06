@@ -2,8 +2,15 @@ const path = require("path");
 const fs = require("fs");
 const inquirer = require("inquirer");
 
-let data = fs.readFileSync("settings.json");
-let settings = JSON.parse(data);
+let settings = {
+  locations: [
+    "x:\\2018\\",
+    "x:\\2019\\",
+    "x:\\2020\\",
+    "x:\\2021\\",
+    "u:\\2021\\",
+  ],
+};
 
 const prepareFile = (file, dir, dirName, extensionNames) => {
   const fileExtensions = new RegExp(extensionNames, "i");
@@ -44,7 +51,12 @@ const listDir = (dir, fileList = []) => {
       } catch (e) {}
     } else {
       let validFilePSD = prepareFile(file, dir, /\\PSD\\*/, /(.psd|.psb)$/);
-      let validFileJPG = prepareFile(file, dir, /\\RENDER\\*/, /(.jpg|.tif)$/);
+      let validFileJPG = prepareFile(
+        file,
+        dir,
+        /\\RENDER\\*/,
+        /(.jpg|.tif|.tiff)$/
+      );
       validFilePSD ? fileList.push(validFilePSD) : null;
       validFileJPG ? fileList.push(validFileJPG) : null;
     }
