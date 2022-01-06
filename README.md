@@ -35,7 +35,7 @@ Type
 npm run build
 ```
 
-to make executable files for Windows, Linux and MacOS.
+inside the Terminal to make executable files for Windows, Linux and MacOS.
 All executables are stored inside the _dist_ folder.
 
 ## Usage
