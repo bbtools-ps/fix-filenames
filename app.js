@@ -13,21 +13,21 @@ let settings = {
 };
 
 const showError = (errorMessage) => {
-  const errorChoices = ["Back", "Exit"];
+  const errorChoices = ["Main Menu", "Exit"];
   console.log("\n" + errorMessage + "\n");
   inquirer
     .prompt([
       {
         type: "list",
-        name: "error",
+        name: "option",
         message: "Go back?",
         choices: errorChoices,
       },
     ])
     .then((answer) => {
-      if (answer.error === "Back") {
-        main();
-      } else if (answer.error === "Exit") {
+      if (answer.option === "Main Menu") {
+        mainMenu();
+      } else if (answer.option === "Exit") {
         console.log("\nExiting...");
       }
     });
@@ -105,10 +105,9 @@ const fixFilenames = (projectDir) => {
   }
 };
 
-console.log("BBTools Fix Filenames v1.0.0\n");
-
-const main = () => {
+const mainMenu = () => {
   console.clear();
+  console.log("BBTools Fix Filenames v1.0.0\n");
   inquirer
     .prompt([
       {
@@ -130,4 +129,4 @@ const main = () => {
     });
 };
 
-main();
+mainMenu();
