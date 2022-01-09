@@ -12,6 +12,27 @@ let settings = {
   ],
 };
 
+const showError = (errorMessage) => {
+  const errorChoices = ["Back", "Exit"];
+  console.log("\n" + errorMessage + "\n");
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "error",
+        message: "Go back?",
+        choices: errorChoices,
+      },
+    ])
+    .then((answer) => {
+      if (answer.error === "Back") {
+        main();
+      } else if (answer.error === "Exit") {
+        console.log("\nExiting...");
+      }
+    });
+};
+
 const prepareFile = (file, dir, dirName, extensionNames) => {
   const fileExtensions = new RegExp(extensionNames, "i");
   const rootDir = new RegExp(dirName, "i");
@@ -86,22 +107,27 @@ const fixFilenames = (projectDir) => {
 
 console.log("BBTools Fix Filenames v1.0.0\n");
 
-inquirer
-  .prompt([
-    {
-      type: "list",
-      name: "location",
-      message: "Choose the location?",
-      choices: settings.locations,
-    },
-  ])
-  .then((answer) => {
-    let projectDir = answer.location;
+const main = () => {
+  console.clear();
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "location",
+        message: "Choose the location?",
+        choices: settings.locations,
+      },
+    ])
+    .then((answer) => {
+      let projectDir = answer.location;
 
-    if (fs.existsSync(projectDir)) {
-      fixFilenames(projectDir);
-      console.log("\nAll done.\n");
-    } else {
-      console.log("\nDirectory not found!\n");
-    }
-  });
+      if (fs.existsSync(projectDir)) {
+        fixFilenames(projectDir);
+        console.log("\nAll done.\n");
+      } else {
+        showError("Directory not found!");
+      }
+    });
+};
+
+main();
