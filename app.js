@@ -15,11 +15,11 @@ let settings = {
 
 /**
  *
- * @param {string} errorMessage = message to be displayed as error message.
+ * @param {string} message = prompt message before User has the choice to go to "Main Menu" or to exit the app.
  */
-const showError = (errorMessage) => {
+const showPrompt = (message) => {
   const errorChoices = ["Main Menu", "Exit"];
-  console.log("\n" + errorMessage + "\n");
+  console.log("\n" + message + "\n");
   inquirer
     .prompt([
       {
@@ -145,9 +145,9 @@ const mainMenu = () => {
 
       if (fs.existsSync(projectDir)) {
         fixFilenames(projectDir);
-        console.log("\nAll done.\n");
+        showPrompt("All done!");
       } else {
-        showError("Directory not found!");
+        showPrompt("Directory not found!");
       }
     });
 };
