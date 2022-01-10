@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const inquirer = require("inquirer");
 
+// Change this Object to include or exclude directories that will be used for file search.
 let settings = {
   locations: [
     "x:\\2018\\",
@@ -12,6 +13,10 @@ let settings = {
   ],
 };
 
+/**
+ *
+ * @param {string} errorMessage = message to be displayed as error message.
+ */
 const showError = (errorMessage) => {
   const errorChoices = ["Main Menu", "Exit"];
   console.log("\n" + errorMessage + "\n");
@@ -33,6 +38,14 @@ const showError = (errorMessage) => {
     });
 };
 
+/**
+ *
+ * @param {string} file = item from files array.
+ * @param {string} dir = root dir for performing file search.
+ * @param {regex} dirName = regular expression of the directory name that is used for testing with the current root directory.
+ * @param {regex} extensionNames = regular expression of valid file extensions that is used for matching the the regex with current file extension.
+ * @returns {(Object|undefined)} = if match is found when testing directory name and file extensions it returns an object with the oldSrc and newSrc properties, otherwise it returns undefined.
+ */
 const prepareFile = (file, dir, dirName, extensionNames) => {
   const fileExtensions = new RegExp(extensionNames, "i");
   const rootDir = new RegExp(dirName, "i");
@@ -61,6 +74,12 @@ const prepareFile = (file, dir, dirName, extensionNames) => {
   }
 };
 
+/**
+ *
+ * @param {string} dir = root dir for performing file search.
+ * @param {Object[]} fileList = array of valid files.
+ * @returns {Object[]} fileList = array of valid and prepared files for renaming.
+ */
 const listDir = (dir, fileList = []) => {
   let files = fs.readdirSync(dir);
 
@@ -86,6 +105,10 @@ const listDir = (dir, fileList = []) => {
   return fileList;
 };
 
+/**
+ *
+ * @param {string} projectDir = root directory for perfoming file search.
+ */
 const fixFilenames = (projectDir) => {
   console.log("\nLooking for files. Please wait...");
   let foundFiles = listDir(projectDir);
