@@ -136,7 +136,7 @@ const mainMenu = () => {
       {
         type: "list",
         name: "rootDir",
-        message: "Choose the location?",
+        message: "Choose the root directory?",
         choices: settings.rootDirs,
       },
     ])
