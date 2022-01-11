@@ -2,9 +2,9 @@ const path = require("path");
 const fs = require("fs");
 const inquirer = require("inquirer");
 
-// Change this Object to include or exclude directories that will be used for file search.
+// Change this Object to include or exclude root directories that will be used for file search.
 let settings = {
-  locations: [
+  rootDirs: [
     "x:\\2018\\",
     "x:\\2019\\",
     "x:\\2020\\",
@@ -107,11 +107,11 @@ const listDir = (dir, fileList = []) => {
 
 /**
  *
- * @param {string} projectDir = root directory for perfoming file search.
+ * @param {string} rootDir = root directory for perfoming file search.
  */
-const fixFilenames = (projectDir) => {
+const fixFilenames = (rootDir) => {
   console.log("\nLooking for files. Please wait...");
-  let foundFiles = listDir(projectDir);
+  let foundFiles = listDir(rootDir);
   if (foundFiles.length) {
     foundFiles.forEach((f) => {
       console.log(`Renaming file: ${f.oldSrc} => ${f.newSrc}`);
@@ -135,16 +135,16 @@ const mainMenu = () => {
     .prompt([
       {
         type: "list",
-        name: "location",
+        name: "rootDir",
         message: "Choose the location?",
-        choices: settings.locations,
+        choices: settings.rootDirs,
       },
     ])
     .then((answer) => {
-      let projectDir = answer.location;
+      let rootDir = answer.rootDir;
 
-      if (fs.existsSync(projectDir)) {
-        fixFilenames(projectDir);
+      if (fs.existsSync(rootDir)) {
+        fixFilenames(rootDir);
         showPrompt("All done!");
       } else {
         showPrompt("Directory not found!");
