@@ -33,7 +33,7 @@ const showPrompt = (message) => {
       if (answer.option === "Main Menu") {
         mainMenu();
       } else if (answer.option === "Exit") {
-        console.log("\nExiting...");
+        console.log("\nExiting...\n");
       }
     });
 };
@@ -46,63 +46,83 @@ const showPrompt = (message) => {
  * @param {regex} extensionNames = regular expression of valid file extensions that is used for matching the the regex with current file extension.
  * @returns {(Object|undefined)} = if match is found when testing directory name and file extensions it returns an object with the oldSrc and newSrc properties, otherwise it returns undefined.
  */
-const prepareFile = (file, dir, dirName, extensionNames) => {
+const getValidFile = (file, dir, dirName, extensionNames) => {
   const fileExtensions = new RegExp(extensionNames, "i");
   const rootDir = new RegExp(dirName, "i");
   let fileExtension = file.trim().match(fileExtensions);
-  // if valid file extension is found in valid dir proceed to rename
+  // if valid file extension is found in valid directory return that file
   if (rootDir.test(dir) && fileExtension.length) {
-    let name = file
-      .trim()
-      .replace(fileExtensions, "")
-      .replace(/[()-.:,'"\!\?]+/g, "")
-      .replace(/\s+/g, "_")
-      .replace(/_+/g, "_")
-      .replace(/copy[_\(0-9\)]*$/gi, "")
-      .replace(/modif[_]*([0-9])[_]*/gi, "Modif$1")
-      .replace(/modif$/gi, "Modif1")
-      .replace(/^_+/, "")
-      .replace(/_+$/g, "");
-    let src = path.join(dir, file);
-    let newSrc = path.join(dir, name + fileExtension[0]);
-    if (src !== newSrc) {
-      return {
-        oldSrc: src,
-        newSrc: newSrc,
-      };
-    }
+    const fileSrc = path.join(dir, file);
+    return fileSrc;
+  }
+};
+
+/**
+ *
+ * @param {string} fileSrc = complete path of the file including the directory, file name and file extension.
+ * @returns {Object} oldSrc for the old file path, newSrc for the new file path
+ */
+const prepareFileForRename = (fileSrc) => {
+  // get the directory from fileSrc path
+  const dir = fileSrc.replace(/[^\\]+$/, "");
+  // get the file from fileSrc path
+  const file = fileSrc.replace(/^.+[\\]/, "");
+  // regex for getting the file extension
+  const extensionRegex = /\.[a-z]+$/;
+  // file extension
+  const fileExtension = fileSrc.trim().match(extensionRegex);
+  // change file name
+  let newName = file
+    .trim()
+    .replace(extensionRegex, "")
+    .replace(/[()-.:,'"\!\?]+/g, "")
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/copy[_\(0-9\)]*$/gi, "")
+    .replace(/modif[_]*([0-9])[_]*/gi, "Modif$1")
+    .replace(/modif$/gi, "Modif1")
+    .replace(/^_+/, "")
+    .replace(/_+$/g, "");
+
+  newFileSrc = path.join(dir, newName + fileExtension[0]);
+
+  // if the file name has changed, and file with the same name doesn't already exist add append it for rename
+  if (fileSrc !== newFileSrc && !fs.existsSync(newFileSrc)) {
+    return { oldSrc: fileSrc, newSrc: newFileSrc };
   }
 };
 
 /**
  *
  * @param {string} dir = root dir for performing file search.
- * @param {Object[]} fileList = array of valid files.
- * @returns {Object[]} fileList = array of valid and prepared files for renaming.
+ * @param {Object} filesLookup = the list of files and directories used for file/directory search.
+ * @param {Object[]} validFiles = array of valid files.
+ * @returns {Object[]} validFiles = array of valid and prepared files for renaming.
  */
-const listDir = (dir, fileList = []) => {
+const listDir = (dir, filesLookup = [], validFiles = []) => {
   let files = fs.readdirSync(dir);
 
-  // Find and prepare files for renaming
+  // find valid files
   files.forEach((file) => {
+    // if item is directory look inside that directory
     if (fs.statSync(path.join(dir, file)).isDirectory()) {
       try {
-        fileList = listDir(path.join(dir, file), fileList);
-      } catch (e) {}
+        validFiles = listDir(path.join(dir, file), filesLookup, validFiles);
+      } catch (err) {}
     } else {
-      let validFilePSD = prepareFile(file, dir, /\\PSD\\*/, /(.psd|.psb)$/);
-      let validFileJPG = prepareFile(
-        file,
-        dir,
-        /\\RENDER\\*/,
-        /(.jpg|.tif|.tiff)$/
-      );
-      validFilePSD ? fileList.push(validFilePSD) : null;
-      validFileJPG ? fileList.push(validFileJPG) : null;
+      filesLookup.forEach((item) => {
+        let foundFiles = getValidFile(
+          file,
+          dir,
+          item.directoryName,
+          item.fileNames
+        );
+        foundFiles ? validFiles.push(foundFiles) : null;
+      });
     }
   });
 
-  return fileList;
+  return validFiles;
 };
 
 /**
@@ -111,18 +131,30 @@ const listDir = (dir, fileList = []) => {
  */
 const fixFilenames = (rootDir) => {
   console.log("\nLooking for files. Please wait...");
-  let foundFiles = listDir(rootDir);
+  // Set the files lookup pattern
+  const filesLookup = [
+    {
+      directoryName: /\\PSD\\*/,
+      fileNames: /(.psd|.psb)$/,
+    },
+    {
+      directoryName: /\\RENDER\\*/,
+      fileNames: /(.jpg|.tif|.tiff)$/,
+    },
+  ];
+
+  let foundFiles = listDir(rootDir, filesLookup);
+
   if (foundFiles.length) {
     foundFiles.forEach((f) => {
-      console.log(`Renaming file: ${f.oldSrc} => ${f.newSrc}`);
-      try {
-        if (fs.existsSync(f.newSrc)) {
-          console.log("File already exists");
-        } else {
-          fs.renameSync(f.oldSrc, f.newSrc);
-        }
-      } catch (err) {
-        console.error(err);
+      let newFileName = prepareFileForRename(f);
+      if (newFileName !== undefined) {
+        try {
+          console.log(
+            `Renaming file: ${newFileName.oldSrc} > ${newFileName.newSrc}`
+          );
+          fs.renameSync(newFileName.oldSrc, newFileName.newSrc);
+        } catch (err) {}
       }
     });
   }
