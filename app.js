@@ -68,7 +68,7 @@ const prepareFileForRename = (fileSrc) => {
   // get the file from fileSrc path
   const file = fileSrc.replace(/^.+[\\]/, "");
   // regex for getting the file extension
-  const extensionRegex = /\.[a-z]+$/;
+  const extensionRegex = /\.[^\\]+$/;
   // file extension
   const fileExtension = fileSrc.trim().match(extensionRegex);
   // change file name
